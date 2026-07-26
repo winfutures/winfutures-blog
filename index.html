@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WIN FUTURES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #17171A;
+    --surface: #1F1F23;
+    --surface-hover: #262629;
+    --border: #2C2C30;
+    --gold: #C6A15B;
+    --gold-dim: #8C744A;
+    --text: #E8E6E1;
+    --text-secondary: #9C9A94;
+    --text-muted: #6B6A65;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 600px 280px;
+    justify-content: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* ===== Left nav ===== */
+  .nav {
+    padding: 20px 12px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    border-right: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 8px 12px 24px;
+    letter-spacing: 0.3px;
+  }
+  .nav-logo .dot { color: var(--gold); }
+  .nav-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .nav-item:hover { background: var(--surface-hover); }
+  .nav-item.active { color: var(--gold); font-weight: 500; }
+  .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+  .nav-write {
+    margin-top: 16px;
+    width: 100%;
+    padding: 12px;
+    background: var(--gold);
+    color: #17171A;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .nav-write:hover { background: #D4B06C; }
+
+  /* ===== Center feed ===== */
+  .feed { border-right: 1px solid var(--border); }
+  .cover {
+    height: 100px;
+    background: linear-gradient(135deg, #1C1C20 0%, #232327 100%);
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .cover svg { position: absolute; right: 24px; top: 20px; opacity: 0.5; }
+  .profile { padding: 0 24px 20px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 3px solid var(--bg);
+    margin-top: -36px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 20px; color: var(--gold);
+  }
+  .name-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; }
+  .badge {
+    display: inline-flex; align-items: center; font-size: 11px; color: var(--gold);
+    border: 1px solid var(--gold-dim); padding: 2px 8px; border-radius: 3px;
+  }
+  .handle { color: var(--text-secondary); font-size: 14px; margin-top: 2px; }
+  .bio { font-size: 14px; line-height: 1.6; margin-top: 12px; }
+  .bio .accent { color: var(--gold); }
+  .stats { display: flex; gap: 20px; margin-top: 14px; font-size: 13px; color: var(--text-secondary); }
+  .stats b { color: var(--text); font-weight: 500; }
+
+  .filters { display: flex; border-bottom: 1px solid var(--border); }
+  .filter {
+    flex: 1; text-align: center; padding: 14px 0; font-size: 14px;
+    color: var(--text-secondary); cursor: pointer; position: relative;
+  }
+  .filter:hover { color: var(--text); background: var(--surface-hover); }
+  .filter.active { color: var(--text); font-weight: 500; }
+  .filter.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 50%;
+    transform: translateX(-50%); width: 32px; height: 2px; background: var(--gold);
+  }
+
+  .post { padding: 18px 24px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+  .post:hover { background: var(--surface-hover); }
+  .post-tag { display: inline-block; font-size: 11px; color: var(--gold); border-left: 2px solid var(--gold); padding-left: 6px; margin-bottom: 8px; }
+  .post-tag.column { color: #9C9A94; border-left-color: #6B6A65; }
+  .post-tag.notice { color: #C48A6A; border-left-color: #8C5C42; }
+  .post-text { font-size: 15px; line-height: 1.65; white-space: pre-line; }
+  .post-meta { display: flex; gap: 16px; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+  .post.hidden { display: none; }
+
+  /* ===== Right sidebar ===== */
+  .side { padding: 20px 16px; position: sticky; top: 0; height: 100vh; }
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 10px 16px; margin-bottom: 20px;
+  }
+  .search-box input {
+    background: none; border: none; outline: none; color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 14px; width: 100%;
+  }
+  .search-box input::placeholder { color: var(--text-muted); }
+  .side-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+  .side-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 12px; }
+  .tag-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; cursor: pointer; }
+  .tag-item:hover .tag-name { color: var(--gold); }
+  .tag-name { color: var(--text); }
+  .tag-count { color: var(--text-muted); font-size: 13px; }
+
+  .signature { display: flex; justify-content: center; padding: 20px 0; gap: 6px; }
+  .signature span { width: 4px; height: 4px; border-radius: 50%; background: var(--gold-dim); }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- LEFT NAV -->
+  <div class="nav">
+    <div class="nav-logo">WIN<span class="dot">·</span>FUTURES</div>
+    <div class="nav-item active"><span class="nav-icon">⌂</span> 홈</div>
+    <div class="nav-item"><span class="nav-icon">⌕</span> 검색</div>
+    <div class="nav-item"><span class="nav-icon">☰</span> 태그</div>
+    <div class="nav-item"><span class="nav-icon">◎</span> 프로필</div>
+    <button class="nav-write" onclick="alert('글쓰기 화면으로 연결 예정')">글쓰기</button>
+  </div>
+
+  <!-- CENTER FEED -->
+  <div class="feed">
+    <div class="cover">
+      <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
+        <path d="M2 20 L14 8 L24 16 L58 3" stroke="#C6A15B" stroke-width="1.5" opacity="0.8"/>
+        <path d="M2 4 L14 16 L24 8 L58 21" stroke="#C6A15B" stroke-width="1.5" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <div class="profile">
+      <div class="avatar">W</div>
+      <div class="name-row">
+        <span class="name">WIN FUTURES</span>
+        <span class="badge">HEDGE ACADEMY</span>
+      </div>
+      <div class="handle">@winfutures · 해외선물 투자자문</div>
+      <div class="bio">15년 경력 해외선물 트레이더. <span class="accent">듀얼 포지션 헤지 시스템</span> 개발자.<br>시장은 예측하지 않는다 — 대응할 뿐이다.</div>
+      <div class="stats"><span><b>1,204</b> 팔로워</span><span><b>318</b> 게시글</span></div>
+    </div>
+
+    <div class="filters">
+      <div class="filter active" data-cat="all">전체</div>
+      <div class="filter" data-cat="market">시장분석</div>
+      <div class="filter" data-cat="column">칼럼</div>
+      <div class="filter" data-cat="notice">공지</div>
+    </div>
+
+    <div class="post" data-cat="market">
+      <div class="post-tag">시장분석</div>
+      <div class="post-text">나스닥 10분봉 기준 구름대 상단 확정 돌파. 진입 신호 발생.
+크루드는 여전히 구름 하단 저항권 — 관망 유지.
+포지션 크기는 계좌 대비 원칙 준수.</div>
+      <div class="post-meta"><span>오전 9:42</span><span>· 조회 842</span></div>
+    </div>
+
+    <div class="post" data-cat="column">
+      <div class="post-tag column">칼럼</div>
+      <div class="post-text">AI 퀀트로 3개월간 백테스트를 돌려봤다. 결론은 명확했다 — 패턴은 반복되지 않고, 레짐은 예고 없이 바뀐다.
+AI는 필터일 뿐, 판단의 주체가 될 수 없다.</div>
+      <div class="post-meta"><span>어제</span><span>· 조회 1,530</span></div>
+    </div>
+
+    <div class="post" data-cat="notice">
+      <div class="post-tag notice">공지</div>
+      <div class="post-text">이번 주 리딩보드 성과 발표는 금요일 오후 6시 예정입니다.
+멤버십 회원분들은 공지 채널을 확인해주세요.</div>
+      <div class="post-meta"><span>2일 전</span><span>· 조회 620</span></div>
+    </div>
+
+    <div class="post" data-cat="market">
+      <div class="post-tag">시장분석</div>
+      <div class="post-text">S&amp;P 50분봉 구름 내부 횡보 지속. 확정 캔들 없이는 진입 근거 없음.
+원칙은 신호가 나올 때까지 기다리는 것.</div>
+      <div class="post-meta"><span>3일 전</span><span>· 조회 701</span></div>
+    </div>
+
+    <div class="signature"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="side">
+    <div class="search-box">
+      <span>⌕</span>
+      <input type="text" placeholder="검색">
+    </div>
+    <div class="side-card">
+      <div class="side-title">카테고리</div>
+      <div class="tag-item"><span class="tag-name">시장분석</span><span class="tag-count">182</span></div>
+      <div class="tag-item"><span class="tag-name">칼럼</span><span class="tag-count">94</span></div>
+      <div class="tag-item"><span class="tag-name">공지</span><span class="tag-count">42</span></div>
+    </div>
+    <div class="side-card">
+      <div class="side-title">최근 태그</div>
+      <div class="tag-item"><span class="tag-name">#나스닥</span><span class="tag-count">312</span></div>
+      <div class="tag-item"><span class="tag-name">#듀얼헤지</span><span class="tag-count">156</span></div>
+      <div class="tag-item"><span class="tag-name">#리딩보드</span><span class="tag-count">88</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const filters = document.querySelectorAll('.filter');
+  const posts = document.querySelectorAll('.post');
+  filters.forEach(f => {
+    f.addEventListener('click', () => {
+      filters.forEach(x => x.classList.remove('active'));
+      f.classList.add('active');
+      const cat = f.dataset.cat;
+      posts.forEach(p => {
+        if (cat === 'all' || p.dataset.cat === cat) {
+          p.classList.remove('hidden');
+        } else {
+          p.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
