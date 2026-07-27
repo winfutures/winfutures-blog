@@ -48,13 +48,6 @@
     height: 100vh;
     border-right: 1px solid var(--border);
   }
-  .nav-logo {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    padding: 8px 12px 24px;
-    letter-spacing: 0.3px;
-  }
   .nav-logo .dot { color: var(--gold); }
   .nav-item {
     display: flex; align-items: center; gap: 14px;
@@ -87,13 +80,20 @@
   }
   .nav-write:hover { background: #D4B06C; }
   .nav-photo {
-    margin-top: 20px;
+    margin-top: 0;
     width: 100%;
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid var(--border);
   }
   .nav-photo img { width: 100%; display: block; }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 16px 12px 24px;
+    letter-spacing: 0.3px;
+  }
 
   /* ===== Center feed ===== */
   .feed { border-right: 1px solid var(--border); }
@@ -181,6 +181,7 @@
 
   <!-- LEFT NAV -->
   <div class="nav">
+    <div class="nav-photo"><img src="profile-photo.png" alt="WIN FUTURES"></div>
     <div class="nav-logo">WIN<span class="dot">·</span>FUTURES</div>
     <div class="nav-item active"><span class="nav-icon">⌂</span> 홈</div>
     <div class="nav-item"><span class="nav-icon">⌕</span> 검색</div>
@@ -188,7 +189,6 @@
     <div class="nav-item"><span class="nav-icon">◎</span> 프로필</div>
     <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
     <a class="nav-write" href="write.html">글쓰기</a>
-    <div class="nav-photo"><img src="profile-photo.png" alt="WIN FUTURES"></div>
   </div>
 
   <!-- CENTER FEED -->
