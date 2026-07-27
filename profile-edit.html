@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>프로필 수정 - WIN FUTURES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #17171A;
+    --surface: #1F1F23;
+    --border: #2C2C30;
+    --gold: #C6A15B;
+    --gold-dim: #8C744A;
+    --text: #E8E6E1;
+    --text-secondary: #9C9A94;
+    --text-muted: #6B6A65;
+    --error: #C46A6A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .wrap { width: 100%; max-width: 480px; }
+  .back { color: var(--text-secondary); text-decoration: none; font-size: 14px; }
+  .back:hover { color: var(--gold); }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    margin: 16px 0 24px;
+  }
+  h1 .dot { color: var(--gold); }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  input[type="text"], input[type="password"], input[type="number"], textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    padding: 12px;
+    outline: none;
+  }
+  input:focus, textarea:focus { border-color: var(--gold-dim); }
+  textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+  .hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  button {
+    margin-top: 24px;
+    width: 100%;
+    padding: 13px;
+    background: var(--gold);
+    color: #17171A;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  button:hover { background: #D4B06C; }
+  button:disabled { background: var(--gold-dim); cursor: not-allowed; }
+  .msg { margin-top: 16px; font-size: 14px; padding: 12px; border-radius: 8px; display: none; }
+  .msg.success { display: block; background: rgba(198,161,91,0.12); color: var(--gold); border: 1px solid var(--gold-dim); }
+  .msg.error { display: block; background: rgba(196,106,106,0.1); color: var(--error); border: 1px solid var(--error); }
+  .loading { color: var(--text-muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 홈으로</a>
+  <h1>WIN<span class="dot">·</span>FUTURES 프로필 수정</h1>
+
+  <p class="loading" id="loading">불러오는 중...</p>
+
+  <form id="profileForm" style="display:none;">
+    <label>비밀번호</label>
+    <input type="password" id="password" required>
+
+    <label>이름 / 상호</label>
+    <input type="text" id="name" required>
+
+    <label>뱃지 (예: HEDGE ACADEMY)</label>
+    <input type="text" id="badge">
+
+    <label>핸들 소개 (예: @winfutures · 해외선물 투자자문)</label>
+    <input type="text" id="handle" required>
+
+    <label>소개글 (bio)</label>
+    <textarea id="bio"></textarea>
+    <div class="hint">**단어**로 감싸면 굵게 강조됩니다. blog.naver.com/아이디 형태는 자동으로 링크가 됩니다. 줄바꿈은 그대로 반영됩니다.</div>
+
+    <label>팔로워 수</label>
+    <input type="number" id="followers">
+
+    <button type="submit" id="submitBtn">저장하기</button>
+    <div class="msg" id="msg"></div>
+  </form>
+</div>
+
+<script>
+  fetch('./profile.json?_=' + Date.now())
+    .then(r => r.json())
+    .then(profile => {
+      document.getElementById('name').value = profile.name || '';
+      document.getElementById('badge').value = profile.badge || '';
+      document.getElementById('handle').value = profile.handle || '';
+      document.getElementById('bio').value = profile.bio || '';
+      document.getElementById('followers').value = profile.followers || 0;
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('profileForm').style.display = 'block';
+    })
+    .catch(() => {
+      document.getElementById('loading').textContent = '프로필을 불러오지 못했습니다.';
+    });
+
+  const form = document.getElementById('profileForm');
+  const msg = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = '저장 중...';
+    msg.className = 'msg';
+
+    const payload = {
+      password: document.getElementById('password').value,
+      name: document.getElementById('name').value,
+      badge: document.getElementById('badge').value,
+      handle: document.getElementById('handle').value,
+      bio: document.getElementById('bio').value,
+      followers: document.getElementById('followers').value
+    };
+
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '오류가 발생했습니다.');
+
+      msg.textContent = data.message;
+      msg.className = 'msg success';
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'msg error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '저장하기';
+    }
+  });
+</script>
+</body>
+</html>
