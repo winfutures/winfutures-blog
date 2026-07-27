@@ -57,6 +57,15 @@
   }
   input[type="password"]:focus, select:focus, textarea:focus { border-color: var(--gold-dim); }
   textarea { min-height: 160px; resize: vertical; line-height: 1.6; }
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .tool-btn {
+    margin: 0; width: auto; padding: 6px 12px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 13px; cursor: pointer;
+  }
+  .tool-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .tool-hint { font-size: 12px; color: var(--text-muted); }
   select { appearance: none; cursor: pointer; }
   button {
     margin-top: 24px;
@@ -95,6 +104,10 @@
     </select>
 
     <label>내용</label>
+    <div class="toolbar">
+      <button type="button" id="boldBtn" class="tool-btn"><b>B</b> 굵게</button>
+      <span class="tool-hint">문장을 선택하고 누르면 강조됩니다</span>
+    </div>
     <textarea id="content" placeholder="글 내용을 입력하세요" required></textarea>
 
     <button type="submit" id="submitBtn">게시하기</button>
@@ -103,6 +116,20 @@
 </div>
 
 <script>
+  const contentBox = document.getElementById('content');
+  document.getElementById('boldBtn').addEventListener('click', () => {
+    const start = contentBox.selectionStart;
+    const end = contentBox.selectionEnd;
+    const val = contentBox.value;
+    const selected = val.slice(start, end);
+    if (!selected) {
+      alert('굵게 표시할 문장을 먼저 드래그해서 선택해주세요.');
+      return;
+    }
+    contentBox.value = val.slice(0, start) + '**' + selected + '**' + val.slice(end);
+    contentBox.focus();
+  });
+
   const form = document.getElementById('postForm');
   const msg = document.getElementById('msg');
   const submitBtn = document.getElementById('submitBtn');

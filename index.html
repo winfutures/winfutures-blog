@@ -131,6 +131,7 @@
   .post-tag.column { color: #9C9A94; border-left-color: #6B6A65; }
   .post-tag.notice { color: #C48A6A; border-left-color: #8C5C42; }
   .post-text { font-size: 15px; line-height: 1.65; white-space: pre-line; }
+  .post-text strong { color: var(--gold); font-weight: 700; }
   .post-meta { display: flex; gap: 16px; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
   .post.hidden { display: none; }
 
@@ -171,6 +172,7 @@
     <div class="nav-item"><span class="nav-icon">⌕</span> 검색</div>
     <div class="nav-item"><span class="nav-icon">☰</span> 태그</div>
     <div class="nav-item"><span class="nav-icon">◎</span> 프로필</div>
+    <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
     <a class="nav-write" href="write.html">글쓰기</a>
   </div>
 
@@ -252,7 +254,7 @@
     container.innerHTML = posts.map(p => `
       <div class="post" data-cat="${p.category}">
         <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
-        <div class="post-text">${escapeHtml(p.content)}</div>
+        <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
         <div class="post-meta"><span>${formatDate(p.date)}</span><span>· 조회 ${p.views.toLocaleString('ko-KR')}</span></div>
       </div>
     `).join('');
@@ -263,6 +265,10 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  function renderBold(escapedText) {
+    return escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   }
 
   function attachFilterLogic() {
