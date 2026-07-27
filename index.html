@@ -181,10 +181,8 @@
   <div class="nav">
     <div class="nav-photo"><img src="profile-photo.png" alt="WIN FUTURES"></div>
     <div class="nav-logo">WIN<span class="dot">·</span>FUTURES</div>
-    <div class="nav-item active"><span class="nav-icon">⌂</span> 홈</div>
-    <div class="nav-item"><span class="nav-icon">⌕</span> 검색</div>
-    <div class="nav-item"><span class="nav-icon">☰</span> 태그</div>
-    <div class="nav-item"><span class="nav-icon">◎</span> 프로필</div>
+    <a class="nav-item active" href="index.html" style="text-decoration:none;"><span class="nav-icon">⌂</span> 홈</a>
+    <a class="nav-item" href="profile-edit.html" style="text-decoration:none;"><span class="nav-icon">◎</span> 프로필</a>
     <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
     <a class="nav-write" href="write.html">글쓰기</a>
   </div>
@@ -193,17 +191,7 @@
   <div class="feed">
     <div class="cover"></div>
 
-    <div class="profile">
-      <div class="name-row">
-        <span class="name">WIN FUTURES</span>
-        <span class="badge">HEDGE ACADEMY</span>
-      </div>
-      <div class="handle">@winfutures · 해외선물 투자자문</div>
-      <div class="bio">WIN FUTURES 대표 | 헤지아카데미 해외선물 대표<br>
-<a href="https://blog.naver.com/hiseek" target="_blank" style="color:var(--gold);text-decoration:none;">blog.naver.com/hiseek</a> | 카카오 ID : winfutures<br>
-<span class="accent">Dual-Position Hedging System</span> 개발자</div>
-      <div class="stats"><span><b>1,204</b> 팔로워</span><span><b>318</b> 게시글</span></div>
-    </div>
+    <div class="profile" id="profileArea"></div>
 
     <div class="filters">
       <div class="filter active" data-cat="all">전체</div>
@@ -299,16 +287,37 @@
     });
   }
 
-  fetch('./posts.json')
-    .then(r => r.json())
-    .then(posts => {
-      posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-      renderPosts(posts);
-    })
-    .catch(() => {
-      document.getElementById('postsContainer').innerHTML =
-        '<div class="post"><div class="post-text">글을 불러오지 못했습니다.</div></div>';
-    });
+  function renderBio(text) {
+    let escaped = escapeHtml(text);
+    escaped = renderBold(escaped);
+    escaped = escaped.replace(/(blog\.naver\.com\/[a-zA-Z0-9_-]+)/g, '<a href="https://$1" target="_blank" style="color:var(--gold);text-decoration:none;">$1</a>');
+    return escaped;
+  }
+
+  function renderProfile(profile, postCount) {
+    const el = document.getElementById('profileArea');
+    el.innerHTML = `
+      <div class="name-row">
+        <span class="name">${escapeHtml(profile.name)}</span>
+        <span class="badge">${escapeHtml(profile.badge)}</span>
+      </div>
+      <div class="handle">${escapeHtml(profile.handle)}</div>
+      <div class="bio">${renderBio(profile.bio).replace(/\n/g, '<br>')}</div>
+      <div class="stats"><span><b>${profile.followers.toLocaleString('ko-KR')}</b> 팔로워</span><span><b>${postCount.toLocaleString('ko-KR')}</b> 게시글</span></div>
+    `;
+  }
+
+  Promise.all([
+    fetch('./profile.json').then(r => r.json()),
+    fetch('./posts.json').then(r => r.json())
+  ]).then(([profile, posts]) => {
+    renderProfile(profile, posts.length);
+    posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    renderPosts(posts);
+  }).catch(() => {
+    document.getElementById('postsContainer').innerHTML =
+      '<div class="post"><div class="post-text">글을 불러오지 못했습니다.</div></div>';
+  });
 </script>
 
 </body>
