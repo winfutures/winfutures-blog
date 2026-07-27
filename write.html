@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>글쓰기 - WIN FUTURES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #17171A;
+    --surface: #1F1F23;
+    --border: #2C2C30;
+    --gold: #C6A15B;
+    --gold-dim: #8C744A;
+    --text: #E8E6E1;
+    --text-secondary: #9C9A94;
+    --text-muted: #6B6A65;
+    --error: #C46A6A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .wrap { width: 100%; max-width: 480px; }
+  .back { color: var(--text-secondary); text-decoration: none; font-size: 14px; }
+  .back:hover { color: var(--gold); }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    margin: 16px 0 24px;
+  }
+  h1 .dot { color: var(--gold); }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  input[type="password"], select, textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    padding: 12px;
+    outline: none;
+  }
+  input[type="password"]:focus, select:focus, textarea:focus { border-color: var(--gold-dim); }
+  textarea { min-height: 160px; resize: vertical; line-height: 1.6; }
+  select { appearance: none; cursor: pointer; }
+  button {
+    margin-top: 24px;
+    width: 100%;
+    padding: 13px;
+    background: var(--gold);
+    color: #17171A;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  button:hover { background: #D4B06C; }
+  button:disabled { background: var(--gold-dim); cursor: not-allowed; }
+  .msg { margin-top: 16px; font-size: 14px; padding: 12px; border-radius: 8px; display: none; }
+  .msg.success { display: block; background: rgba(198,161,91,0.12); color: var(--gold); border: 1px solid var(--gold-dim); }
+  .msg.error { display: block; background: rgba(196,106,106,0.1); color: var(--error); border: 1px solid var(--error); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 홈으로</a>
+  <h1>WIN<span class="dot">·</span>FUTURES 글쓰기</h1>
+
+  <form id="postForm">
+    <label>비밀번호</label>
+    <input type="password" id="password" required>
+
+    <label>카테고리</label>
+    <select id="category" required>
+      <option value="market">시장분석</option>
+      <option value="column">칼럼</option>
+      <option value="notice">공지</option>
+    </select>
+
+    <label>내용</label>
+    <textarea id="content" placeholder="글 내용을 입력하세요" required></textarea>
+
+    <button type="submit" id="submitBtn">게시하기</button>
+    <div class="msg" id="msg"></div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('postForm');
+  const msg = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = '저장 중...';
+    msg.className = 'msg';
+
+    const password = document.getElementById('password').value;
+    const category = document.getElementById('category').value;
+    const content = document.getElementById('content').value;
+
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, category, content })
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || '오류가 발생했습니다.');
+
+      msg.textContent = data.message;
+      msg.className = 'msg success';
+      form.reset();
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'msg error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '게시하기';
+    }
+  });
+</script>
+</body>
+</html>
