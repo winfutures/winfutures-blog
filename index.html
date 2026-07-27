@@ -47,10 +47,11 @@
     top: 0;
     height: 100vh;
     border-right: 1px solid var(--border);
+    text-align: right;
   }
   .nav-logo .dot { color: var(--gold); }
   .nav-item {
-    display: flex; align-items: center; gap: 14px;
+    display: flex; align-items: center; justify-content: flex-end; gap: 14px;
     padding: 12px;
     border-radius: 8px;
     font-size: 16px;
@@ -85,7 +86,7 @@
     border-bottom: 1px solid var(--border);
     margin-bottom: 12px;
   }
-  .nav-profile .name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .nav-profile .name-row { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
   .nav-profile .name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; }
   .nav-profile .badge {
     display: inline-flex; align-items: center; font-size: 10px; color: var(--gold);
@@ -93,7 +94,7 @@
   }
   .nav-profile .handle { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
   .nav-profile .bio { font-size: 12px; line-height: 1.6; margin-top: 10px; }
-  .nav-profile .stats { display: flex; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
+  .nav-profile .stats { display: flex; justify-content: flex-end; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
   .nav-profile .stats b { color: var(--text); font-weight: 500; }
 
   .nav-category {
@@ -103,7 +104,7 @@
   }
   .nav-category-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 4px 8px; }
   .cat-item {
-    display: flex; justify-content: space-between; align-items: center;
+    display: flex; justify-content: flex-end; align-items: center; gap: 10px;
     padding: 8px 8px; border-radius: 6px; font-size: 14px; cursor: pointer;
   }
   .cat-item:hover { background: var(--surface-hover); }
@@ -331,7 +332,7 @@
         <span class="name">${escapeHtml(profile.name)}</span>
         <span class="badge">${escapeHtml(profile.badge)}</span>
       </div>
-      <div class="handle">${escapeHtml(profile.handle)}</div>
+      ${profile.handle ? `<div class="handle">${escapeHtml(profile.handle)}</div>` : ''}
       <div class="bio">${renderBio(profile.bio).replace(/\n/g, '<br>')}</div>
       <div class="stats"><span><b>${profile.followers.toLocaleString('ko-KR')}</b> 팔로워</span><span><b>${postCount.toLocaleString('ko-KR')}</b> 게시글</span></div>
     `;
