@@ -79,6 +79,36 @@
     box-sizing: border-box;
   }
   .nav-write:hover { background: #D4B06C; }
+
+  .nav-profile {
+    padding: 16px 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .nav-profile .name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .nav-profile .name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; }
+  .nav-profile .badge {
+    display: inline-flex; align-items: center; font-size: 10px; color: var(--gold);
+    border: 1px solid var(--gold-dim); padding: 1px 6px; border-radius: 3px;
+  }
+  .nav-profile .handle { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
+  .nav-profile .bio { font-size: 12px; line-height: 1.6; margin-top: 10px; }
+  .nav-profile .stats { display: flex; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
+  .nav-profile .stats b { color: var(--text); font-weight: 500; }
+
+  .nav-category {
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .nav-category-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 4px 8px; }
+  .cat-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 8px; border-radius: 6px; font-size: 14px; cursor: pointer;
+  }
+  .cat-item:hover { background: var(--surface-hover); }
+  .cat-item.active { color: var(--gold); }
+  .cat-count { color: var(--text-muted); font-size: 12px; }
   .nav-photo {
     margin-top: 0;
     width: 100%;
@@ -181,6 +211,8 @@
   <div class="nav">
     <div class="nav-photo"><img src="profile-photo.png" alt="WIN FUTURES"></div>
     <div class="nav-logo">WIN<span class="dot">·</span>FUTURES</div>
+    <div class="nav-profile" id="profileArea"></div>
+    <div class="nav-category" id="categoryArea"></div>
     <a class="nav-item active" href="index.html" style="text-decoration:none;"><span class="nav-icon">⌂</span> 홈</a>
     <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
     <a class="nav-write" href="write.html">글쓰기</a>
@@ -189,8 +221,6 @@
   <!-- CENTER FEED -->
   <div class="feed">
     <div class="cover"></div>
-
-    <div class="profile" id="profileArea"></div>
 
     <div class="filters">
       <div class="filter active" data-cat="all">전체</div>
@@ -261,23 +291,30 @@
     return escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   }
 
-  function attachFilterLogic() {
-    const filters = document.querySelectorAll('.filter');
-    const posts = document.querySelectorAll('.post');
-    filters.forEach(f => {
-      f.onclick = () => {
-        filters.forEach(x => x.classList.remove('active'));
-        f.classList.add('active');
-        const cat = f.dataset.cat;
-        posts.forEach(p => {
-          if (cat === 'all' || p.dataset.cat === cat) {
-            p.classList.remove('hidden');
-          } else {
-            p.classList.add('hidden');
-          }
-        });
-      };
+  function applyFilter(cat) {
+    document.querySelectorAll('.filter').forEach(f => f.classList.toggle('active', f.dataset.cat === cat));
+    document.querySelectorAll('.cat-item').forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
+    document.querySelectorAll('.post').forEach(p => {
+      p.classList.toggle('hidden', !(cat === 'all' || p.dataset.cat === cat));
     });
+  }
+
+  function attachFilterLogic() {
+    document.querySelectorAll('.filter').forEach(f => { f.onclick = () => applyFilter(f.dataset.cat); });
+    document.querySelectorAll('.cat-item').forEach(c => { c.onclick = () => applyFilter(c.dataset.cat); });
+  }
+
+  function renderCategoryList(posts) {
+    const counts = { market: 0, column: 0, notice: 0 };
+    posts.forEach(p => { if (counts[p.category] !== undefined) counts[p.category]++; });
+    const el = document.getElementById('categoryArea');
+    el.innerHTML = `
+      <div class="nav-category-title">카테고리</div>
+      <div class="cat-item active" data-cat="all"><span>전체</span><span class="cat-count">${posts.length}</span></div>
+      <div class="cat-item" data-cat="market"><span>시장분석</span><span class="cat-count">${counts.market}</span></div>
+      <div class="cat-item" data-cat="column"><span>칼럼</span><span class="cat-count">${counts.column}</span></div>
+      <div class="cat-item" data-cat="notice"><span>공지</span><span class="cat-count">${counts.notice}</span></div>
+    `;
   }
 
   function renderBio(text) {
@@ -306,6 +343,7 @@
   ]).then(([profile, posts]) => {
     renderProfile(profile, posts.length);
     posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    renderCategoryList(posts);
     renderPosts(posts);
   }).catch(() => {
     document.getElementById('postsContainer').innerHTML =
