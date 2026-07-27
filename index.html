@@ -98,12 +98,10 @@
   /* ===== Center feed ===== */
   .feed { border-right: 1px solid var(--border); }
   .cover {
-    height: 100px;
-    background: linear-gradient(135deg, #1C1C20 0%, #232327 100%);
-    position: relative;
+    height: 160px;
+    background: var(--surface) url('banner.png') center center / cover no-repeat;
     border-bottom: 1px solid var(--border);
   }
-  .cover svg { position: absolute; right: 24px; top: 20px; opacity: 0.5; }
   .profile { padding: 16px 24px 20px; border-bottom: 1px solid var(--border); }
   .avatar {
     width: 72px; height: 72px;
@@ -193,12 +191,7 @@
 
   <!-- CENTER FEED -->
   <div class="feed">
-    <div class="cover">
-      <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
-        <path d="M2 20 L14 8 L24 16 L58 3" stroke="#C6A15B" stroke-width="1.5" opacity="0.8"/>
-        <path d="M2 4 L14 16 L24 8 L58 21" stroke="#C6A15B" stroke-width="1.5" opacity="0.4"/>
-      </svg>
-    </div>
+    <div class="cover"></div>
 
     <div class="profile">
       <div class="name-row">
