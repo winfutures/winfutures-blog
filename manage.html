@@ -91,6 +91,48 @@
   }
   .del-btn:hover { background: rgba(196,106,106,0.1); }
   .del-btn:disabled { opacity: 0.5; }
+  .edit-btn {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 6px 14px;
+    font-size: 13px;
+    margin-right: 8px;
+  }
+  .edit-btn:hover { background: rgba(204,106,30,0.1); }
+
+  .edit-form label { display: block; font-size: 12px; color: var(--text-secondary); margin: 12px 0 6px; }
+  .edit-form select, .edit-form textarea, .edit-form input[type="file"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    padding: 10px;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .edit-form textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+  .edit-form-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .save-btn {
+    background: var(--gold);
+    color: #17171A;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .save-btn:hover { background: #E08A42; }
+  .cancel-btn {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  .remove-image-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--text-secondary); }
 
   #manageArea { display: none; }
   .msg { margin: 12px 0; font-size: 13px; padding: 10px; border-radius: 8px; display: none; }
@@ -130,10 +172,14 @@
     return escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   }
 
+  let postsById = {};
+
   async function loadPosts() {
     const res = await fetch('./posts.json?_=' + Date.now());
     const posts = await res.json();
     posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    postsById = {};
+    posts.forEach(p => { postsById[p.id] = p; });
     const list = document.getElementById('postList');
     if (posts.length === 0) {
       list.innerHTML = '<p style="color:var(--text-muted)">게시된 글이 없습니다.</p>';
@@ -141,15 +187,113 @@
     }
     list.innerHTML = posts.map(p => `
       <div class="post-item" data-id="${p.id}">
-        <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
-        ${p.image ? `<img src="${p.image}" alt="첨부 이미지" style="width:100%;border-radius:6px;margin-bottom:8px;display:block;">` : ''}
-        <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
-        <div class="post-footer">
-          <span class="post-date">${new Date(p.date).toLocaleString('ko-KR')}</span>
-          <button class="del-btn" onclick="deletePost('${p.id}', this)">삭제</button>
+        <div class="view-mode">
+          <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
+          ${p.image ? `<img src="${p.image}" alt="첨부 이미지" style="width:100%;border-radius:6px;margin-bottom:8px;display:block;">` : ''}
+          <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
+          <div class="post-footer">
+            <span class="post-date">${new Date(p.date).toLocaleString('ko-KR')}${p.editedAt ? ' (수정됨)' : ''}</span>
+            <span>
+              <button class="edit-btn" onclick="openEdit('${p.id}')">수정</button>
+              <button class="del-btn" onclick="deletePost('${p.id}', this)">삭제</button>
+            </span>
+          </div>
         </div>
+        <div class="edit-form" id="edit-${p.id}" style="display:none;"></div>
       </div>
     `).join('');
+  }
+
+  function openEdit(id) {
+    const p = postsById[id];
+    const item = document.querySelector(`.post-item[data-id="${id}"]`);
+    item.querySelector('.view-mode').style.display = 'none';
+    const formEl = item.querySelector('.edit-form');
+    formEl.style.display = 'block';
+    formEl.innerHTML = `
+      <label>카테고리</label>
+      <select id="edit-cat-${id}">
+        <option value="notice" ${p.category === 'notice' ? 'selected' : ''}>필독해주세요</option>
+        <option value="community" ${p.category === 'community' ? 'selected' : ''}>커뮤니티안내</option>
+        <option value="review" ${p.category === 'review' ? 'selected' : ''}>트레이딩리뷰</option>
+        <option value="archive" ${p.category === 'archive' ? 'selected' : ''}>자료아카이브</option>
+      </select>
+      <label>내용</label>
+      <textarea id="edit-content-${id}">${escapeHtml(p.content)}</textarea>
+      ${p.image ? `
+        <div class="remove-image-row">
+          <input type="checkbox" id="edit-removeimg-${id}">
+          <label for="edit-removeimg-${id}" style="margin:0;">기존 이미지 삭제</label>
+        </div>
+      ` : ''}
+      <label>${p.image ? '이미지 교체 (선택)' : '이미지 첨부 (선택)'}</label>
+      <input type="file" id="edit-image-${id}" accept="image/*">
+      <div class="edit-form-actions">
+        <button class="save-btn" onclick="saveEdit('${id}')">저장</button>
+        <button class="cancel-btn" type="button" onclick="cancelEdit('${id}')">취소</button>
+      </div>
+      <div class="msg" id="edit-msg-${id}"></div>
+    `;
+  }
+
+  function cancelEdit(id) {
+    const item = document.querySelector(`.post-item[data-id="${id}"]`);
+    item.querySelector('.edit-form').style.display = 'none';
+    item.querySelector('.view-mode').style.display = 'block';
+  }
+
+  function compressImageFile(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX_DIM = 1280;
+          let w = img.width, h = img.height;
+          if (w > h && w > MAX_DIM) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+          else if (h > MAX_DIM) { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function saveEdit(id) {
+    const msg = document.getElementById(`edit-msg-${id}`);
+    msg.className = 'msg';
+    const category = document.getElementById(`edit-cat-${id}`).value;
+    const content = document.getElementById(`edit-content-${id}`).value;
+    const fileInput = document.getElementById(`edit-image-${id}`);
+    const removeImgEl = document.getElementById(`edit-removeimg-${id}`);
+    const removeImage = removeImgEl ? removeImgEl.checked : false;
+
+    let imageData = null;
+    if (fileInput.files[0]) {
+      imageData = await compressImageFile(fileInput.files[0]);
+    }
+
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: storedPassword, id, category, content, imageData, removeImage })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '수정 실패');
+
+      msg.textContent = data.message;
+      msg.className = 'msg success';
+      setTimeout(() => loadPosts(), 800);
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'msg error';
+    }
   }
 
   async function deletePost(id, btn) {
