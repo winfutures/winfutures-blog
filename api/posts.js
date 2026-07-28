@@ -256,6 +256,8 @@ async function handleEdit(req, res) {
     res.status(500).json({ error: err.message || '알 수 없는 오류가 발생했습니다.' });
   }
 }
+
+async function handleDelete(req, res) {
   try {
     const { password, id } = req.body || {};
 
