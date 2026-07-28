@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
       res.status(400).json({ error: '카테고리와 내용을 입력해주세요.' });
       return;
     }
-    if (!['community', 'review', 'archive'].includes(category)) {
+    if (!['notice', 'community', 'review', 'archive'].includes(category)) {
       res.status(400).json({ error: '올바르지 않은 카테고리입니다.' });
       return;
     }
