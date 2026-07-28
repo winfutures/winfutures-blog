@@ -82,12 +82,11 @@
   .nav-write:hover { background: #D4B06C; }
 
   .nav-profile {
-    padding: 16px 4px;
+    padding: 4px 4px 16px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 12px;
   }
   .nav-profile .name-row { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
-  .nav-profile .name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; }
   .nav-profile .badge {
     display: inline-flex; align-items: center; font-size: 10px; color: var(--gold);
     border: 1px solid var(--gold-dim); padding: 1px 6px; border-radius: 3px;
@@ -121,9 +120,10 @@
   .nav-logo {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 18px;
-    padding: 16px 12px 24px;
+    font-size: 16px;
+    padding: 12px 4px 4px;
     letter-spacing: 0.3px;
+    text-align: right;
   }
 
   /* ===== Center feed ===== */
@@ -211,7 +211,7 @@
   <!-- LEFT NAV -->
   <div class="nav">
     <div class="nav-photo"><img src="profile-photo.png" alt="WIN FUTURES"></div>
-    <div class="nav-logo">WIN<span class="dot">·</span>FUTURES</div>
+    <div class="nav-logo">WIN FUTURES ARCHIVE</div>
     <div class="nav-profile" id="profileArea"></div>
     <div class="nav-category" id="categoryArea"></div>
     <a class="nav-item active" href="index.html" style="text-decoration:none;"><span class="nav-icon">⌂</span> 홈</a>
@@ -225,9 +225,9 @@
 
     <div class="filters">
       <div class="filter active" data-cat="all">전체</div>
-      <div class="filter" data-cat="market">시장분석</div>
-      <div class="filter" data-cat="column">칼럼</div>
-      <div class="filter" data-cat="notice">공지</div>
+      <div class="filter" data-cat="community">커뮤니티안내</div>
+      <div class="filter" data-cat="review">트레이딩리뷰</div>
+      <div class="filter" data-cat="archive">자료아카이브</div>
     </div>
 
     <div id="postsContainer"></div>
@@ -252,8 +252,8 @@
 </div>
 
 <script>
-  const CATEGORY_LABEL = { market: '시장분석', column: '칼럼', notice: '공지' };
-  const CATEGORY_CLASS = { market: '', column: 'column', notice: 'notice' };
+  const CATEGORY_LABEL = { community: '커뮤니티안내', review: '트레이딩리뷰', archive: '자료아카이브' };
+  const CATEGORY_CLASS = { community: '', review: 'column', archive: 'notice' };
 
   function formatDate(iso) {
     const d = new Date(iso);
@@ -306,15 +306,15 @@
   }
 
   function renderCategoryList(posts) {
-    const counts = { market: 0, column: 0, notice: 0 };
+    const counts = { community: 0, review: 0, archive: 0 };
     posts.forEach(p => { if (counts[p.category] !== undefined) counts[p.category]++; });
     const el = document.getElementById('categoryArea');
     el.innerHTML = `
       <div class="nav-category-title">카테고리</div>
       <div class="cat-item active" data-cat="all"><span>전체</span><span class="cat-count">${posts.length}</span></div>
-      <div class="cat-item" data-cat="market"><span>시장분석</span><span class="cat-count">${counts.market}</span></div>
-      <div class="cat-item" data-cat="column"><span>칼럼</span><span class="cat-count">${counts.column}</span></div>
-      <div class="cat-item" data-cat="notice"><span>공지</span><span class="cat-count">${counts.notice}</span></div>
+      <div class="cat-item" data-cat="community"><span>커뮤니티안내</span><span class="cat-count">${counts.community}</span></div>
+      <div class="cat-item" data-cat="review"><span>트레이딩리뷰</span><span class="cat-count">${counts.review}</span></div>
+      <div class="cat-item" data-cat="archive"><span>자료아카이브</span><span class="cat-count">${counts.archive}</span></div>
     `;
   }
 
@@ -328,10 +328,7 @@
   function renderProfile(profile, postCount) {
     const el = document.getElementById('profileArea');
     el.innerHTML = `
-      <div class="name-row">
-        <span class="name">${escapeHtml(profile.name)}</span>
-        <span class="badge">${escapeHtml(profile.badge)}</span>
-      </div>
+      ${profile.badge ? `<div class="name-row"><span class="badge">${escapeHtml(profile.badge)}</span></div>` : ''}
       ${profile.handle ? `<div class="handle">${escapeHtml(profile.handle)}</div>` : ''}
       <div class="bio">${renderBio(profile.bio).replace(/\n/g, '<br>')}</div>
       <div class="stats"><span><b>${profile.followers.toLocaleString('ko-KR')}</b> 팔로워</span><span><b>${postCount.toLocaleString('ko-KR')}</b> 게시글</span></div>
