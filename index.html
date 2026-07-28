@@ -113,6 +113,7 @@
   .cat-item:hover { background: var(--surface-hover); }
   .cat-item.active { color: var(--gold); }
   .cat-count { color: var(--text-muted); font-size: 12px; }
+  .nav-photo, .cover { display: block; text-decoration: none; }
   .nav-photo {
     margin-top: 0;
     width: 100%;
@@ -215,18 +216,17 @@
 
   <!-- LEFT NAV -->
   <div class="nav">
-    <div class="nav-photo"><img src="logo.png" alt="WIN FUTURES"></div>
+    <a href="index.html"><div class="nav-photo"><img src="logo.png" alt="WIN FUTURES"></div></a>
     <div class="nav-logo">WIN FUTURES ARCHIVE</div>
     <div class="nav-profile" id="profileArea"></div>
     <div class="nav-category" id="categoryArea"></div>
-    <a class="nav-item active" href="index.html" style="text-decoration:none;"><span class="nav-icon">⌂</span> 홈</a>
     <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
     <a class="nav-write" href="write.html">✎ 글쓰기</a>
   </div>
 
   <!-- CENTER FEED -->
   <div class="feed">
-    <div class="cover"></div>
+    <a href="index.html"><div class="cover"></div></a>
 
     <div class="filters">
       <div class="filter active" data-cat="all">전체</div>
