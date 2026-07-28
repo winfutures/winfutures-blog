@@ -328,7 +328,8 @@
   function renderBio(text) {
     let escaped = escapeHtml(text);
     escaped = renderBold(escaped);
-    escaped = escaped.replace(/(blog\.naver\.com\/[a-zA-Z0-9_-]+)/g, '<a href="https://$1" target="_blank" style="color:var(--gold);text-decoration:none;">$1</a>');
+    escaped = escaped.replace(/(blog\.naver\.com\/[a-zA-Z0-9_-]+)/gi, (match) => `<a href="https://${match}" target="_blank" style="color:var(--gold);text-decoration:none;">${match}</a>`);
+    escaped = escaped.replace(/(카카오\s*(?:ID|아이디)\s*[:：]?\s*)([A-Za-z0-9_.\-]+)/gi, (m, label, id) => `${label}<span style="color:var(--gold);">${id}</span>`);
     return escaped;
   }
 
