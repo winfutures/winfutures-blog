@@ -90,6 +90,8 @@
     overflow: hidden;
     border: 1px solid var(--border);
   }
+  .nav-poster { cursor: pointer; transition: opacity 0.15s; }
+  .nav-poster:hover { opacity: 0.85; }
   .nav-poster img { width: 100%; display: block; }
 
   .nav-profile {
@@ -229,6 +231,8 @@
     border: 1px solid var(--border);
     margin-bottom: 16px;
   }
+  .poster-banner { cursor: pointer; transition: opacity 0.15s; }
+  .poster-banner:hover { opacity: 0.85; }
   .poster-banner img { width: 100%; display: block; }
 
   .signature { display: flex; justify-content: center; padding: 20px 0; gap: 6px; }
@@ -247,9 +251,11 @@
     <div class="nav-category" id="categoryArea"></div>
     <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
     <a class="nav-write" href="write.html">✎ 글쓰기</a>
-    <div class="nav-poster" id="navPoster">
-      <img src="poster-left.jpg" alt="WIN FUTURES" onerror="document.getElementById('navPoster').style.display='none';">
-    </div>
+    <a href="poster-left.jpg" target="_blank">
+      <div class="nav-poster" id="navPoster">
+        <img src="poster-left.jpg" alt="WIN FUTURES" onerror="document.getElementById('navPoster').parentElement.style.display='none';">
+      </div>
+    </a>
   </div>
 
   <!-- CENTER FEED -->
@@ -279,9 +285,11 @@
       <div class="side-title">최근 태그</div>
       <div id="tagsArea"></div>
     </div>
-    <div class="poster-banner" id="posterBanner">
-      <img src="poster.jpg" alt="WIN FUTURES" onerror="document.getElementById('posterBanner').style.display='none';">
-    </div>
+    <a href="poster.jpg" target="_blank">
+      <div class="poster-banner" id="posterBanner">
+        <img src="poster.jpg" alt="WIN FUTURES" onerror="document.getElementById('posterBanner').parentElement.style.display='none';">
+      </div>
+    </a>
   </div>
 
 </div>
