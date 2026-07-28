@@ -84,15 +84,20 @@
     box-sizing: border-box;
   }
   .nav-write:hover { background: rgba(198,161,91,0.08); border-color: var(--gold); }
-  .nav-poster {
-    margin-top: 20px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--border);
+  .side-actions { display: flex; gap: 10px; margin-bottom: 16px; }
+  .side-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 6px;
+    color: var(--gold);
+    font-size: 13px;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
   }
-  .nav-poster { cursor: pointer; transition: opacity 0.15s; }
-  .nav-poster:hover { opacity: 0.85; }
-  .nav-poster img { width: 100%; display: block; }
+  .side-btn:hover { background: rgba(204,106,30,0.08); border-color: var(--gold); }
+  .side-btn-primary { background: rgba(204,106,30,0.1); }
 
   .nav-profile {
     padding: 4px 4px 16px;
@@ -195,7 +200,7 @@
   .post.hidden { display: none; }
 
   /* ===== Right sidebar ===== */
-  .side { padding: 20px 16px; position: sticky; top: 0; height: 100vh; }
+  .side { padding: 20px 16px; }
   .search-box {
     display: flex; align-items: center; gap: 10px;
     background: var(--surface); border: 1px solid var(--border);
@@ -250,13 +255,6 @@
     <div class="nav-logo">WIN FUTURES ARCHIVE</div>
     <div class="nav-profile" id="profileArea"></div>
     <div class="nav-category" id="categoryArea"></div>
-    <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
-    <a class="nav-write" href="write.html">✎ 글쓰기</a>
-    <a href="poster-left.jpg" target="_blank">
-      <div class="nav-poster" id="navPoster">
-        <img src="poster-left.jpg" alt="WIN FUTURES" onerror="document.getElementById('navPoster').parentElement.style.display='none';">
-      </div>
-    </a>
   </div>
 
   <!-- CENTER FEED -->
@@ -286,9 +284,18 @@
       <div class="side-title">최근 태그</div>
       <div id="tagsArea"></div>
     </div>
+    <div class="side-actions">
+      <a class="side-btn" href="manage.html">🗑 글 관리</a>
+      <a class="side-btn side-btn-primary" href="write.html">✎ 글쓰기</a>
+    </div>
     <a href="poster.jpg" target="_blank">
       <div class="poster-banner" id="posterBanner">
         <img src="poster.jpg" alt="WIN FUTURES" onerror="document.getElementById('posterBanner').parentElement.style.display='none';">
+      </div>
+    </a>
+    <a href="poster-left.jpg" target="_blank">
+      <div class="poster-banner" id="navPoster">
+        <img src="poster-left.jpg" alt="WIN FUTURES" onerror="document.getElementById('navPoster').parentElement.style.display='none';">
       </div>
     </a>
   </div>
