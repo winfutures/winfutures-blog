@@ -67,6 +67,24 @@
   }
   .tool-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
   .tool-hint { font-size: 12px; color: var(--text-muted); }
+  .hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  input[type="file"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    padding: 10px;
+  }
+  #imagePreviewWrap { margin-top: 12px; }
+  #imagePreview {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: block;
+  }
   select { appearance: none; cursor: pointer; }
   button {
     margin-top: 24px;
@@ -105,6 +123,14 @@
       <option value="archive">자료아카이브</option>
     </select>
 
+    <label>이미지 첨부 (선택)</label>
+    <input type="file" id="imageInput" accept="image/*">
+    <div class="hint">사진을 선택하면 자동으로 크기를 줄여서 업로드합니다. 너무 큰 원본이어도 괜찮습니다.</div>
+    <div id="imagePreviewWrap" style="display:none;">
+      <img id="imagePreview" alt="미리보기">
+      <button type="button" id="removeImageBtn" class="tool-btn" style="margin-top:8px;">이미지 제거</button>
+    </div>
+
     <label>내용</label>
     <div class="toolbar">
       <button type="button" id="boldBtn" class="tool-btn"><b>B</b> 굵게</button>
@@ -118,6 +144,46 @@
 </div>
 
 <script>
+  let compressedImageData = null;
+
+  const imageInput = document.getElementById('imageInput');
+  const imagePreviewWrap = document.getElementById('imagePreviewWrap');
+  const imagePreview = document.getElementById('imagePreview');
+  const removeImageBtn = document.getElementById('removeImageBtn');
+
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX_DIM = 1280;
+        let w = img.width, h = img.height;
+        if (w > h && w > MAX_DIM) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+        else if (h > MAX_DIM) { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+        compressedImageData = canvas.toDataURL('image/jpeg', 0.82);
+        imagePreview.src = compressedImageData;
+        imagePreviewWrap.style.display = 'block';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  removeImageBtn.addEventListener('click', () => {
+    compressedImageData = null;
+    imageInput.value = '';
+    imagePreviewWrap.style.display = 'none';
+  });
+
   const contentBox = document.getElementById('content');
   document.getElementById('boldBtn').addEventListener('click', () => {
     const start = contentBox.selectionStart;
@@ -150,7 +216,7 @@
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password, category, content })
+        body: JSON.stringify({ password, category, content, imageData: compressedImageData })
       });
       const data = await res.json();
 
@@ -159,6 +225,8 @@
       msg.textContent = data.message;
       msg.className = 'msg success';
       form.reset();
+      compressedImageData = null;
+      imagePreviewWrap.style.display = 'none';
     } catch (err) {
       msg.textContent = err.message;
       msg.className = 'msg error';

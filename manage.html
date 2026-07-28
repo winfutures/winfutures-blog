@@ -142,6 +142,7 @@
     list.innerHTML = posts.map(p => `
       <div class="post-item" data-id="${p.id}">
         <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
+        ${p.image ? `<img src="${p.image}" alt="첨부 이미지" style="width:100%;border-radius:6px;margin-bottom:8px;display:block;">` : ''}
         <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
         <div class="post-footer">
           <span class="post-date">${new Date(p.date).toLocaleString('ko-KR')}</span>

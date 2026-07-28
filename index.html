@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WIN FUTURES | 대표 전용 데이터 보관소 · 듀얼 헤지 전략 블로그</title>
-<meta name="description" content="WIN FUTURES 대표의 자료실, 듀얼 포지션 헤지 시스템 이야기.">
+<title>WIN FUTURES | 해외선물 시장분석 · 듀얼 헤지 전략 블로그</title>
+<meta name="description" content="15년 경력 해외선물 트레이더 WIN FUTURES의 시장분석, 트레이딩 칼럼, 듀얼 포지션 헤지 시스템 이야기.">
 <meta property="og:title" content="WIN FUTURES | 해외선물 시장분석 블로그">
-<meta property="og:description" content="WIN FUTURES 대표의 자료실, 듀얼 포지션 헤지 시스템 이야기.">
+<meta property="og:description" content="15년 경력 해외선물 트레이더의 시장분석과 헤지 전략 칼럼.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://winfutures-blog.vercel.app/">
 <link rel="canonical" href="https://winfutures-blog.vercel.app/">
@@ -190,6 +190,7 @@
   .post-tag.archive { color: #8FA8C4; border-left-color: #5C7A99; }
   .post-text { font-size: 15px; line-height: 1.65; white-space: pre-line; }
   .post-text strong { color: var(--gold); font-weight: 700; }
+  .post-image { width: 100%; border-radius: 8px; margin: 10px 0; display: block; }
   .post-meta { display: flex; gap: 16px; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
   .post.hidden { display: none; }
 
@@ -321,6 +322,7 @@
     container.innerHTML = posts.map(p => `
       <div class="post" data-cat="${p.category}" data-search="${escapeHtml(p.content.toLowerCase())}">
         <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
+        ${p.image ? `<img class="post-image" src="${p.image}" alt="첨부 이미지" loading="lazy">` : ''}
         <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
         <div class="post-meta"><span>${formatDate(p.date)}</span><span>· 조회 ${p.views.toLocaleString('ko-KR')}</span></div>
       </div>
