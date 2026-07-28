@@ -78,6 +78,7 @@
   .post-tag { display: inline-block; font-size: 11px; color: var(--gold); border-left: 2px solid var(--gold); padding-left: 6px; margin-bottom: 8px; }
   .post-tag.column { color: #9C9A94; border-left-color: #6B6A65; }
   .post-tag.notice { color: #C48A6A; border-left-color: #8C5C42; }
+  .post-tag.archive { color: #8FA8C4; border-left-color: #5C7A99; }
   .post-text { font-size: 14px; line-height: 1.6; white-space: pre-line; margin-bottom: 10px; }
   .post-footer { display: flex; justify-content: space-between; align-items: center; }
   .post-date { font-size: 12px; color: var(--text-muted); }
@@ -115,8 +116,8 @@
 </div>
 
 <script>
-  const CATEGORY_LABEL = { community: '커뮤니티안내', review: '트레이딩리뷰', archive: '자료아카이브' };
-  const CATEGORY_CLASS = { community: '', review: 'column', archive: 'notice' };
+  const CATEGORY_LABEL = { notice: '공지', community: '커뮤니티안내', review: '트레이딩리뷰', archive: '자료아카이브' };
+  const CATEGORY_CLASS = { notice: 'notice', community: '', review: 'column', archive: 'archive' };
   let storedPassword = '';
 
   function escapeHtml(str) {
