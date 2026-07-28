@@ -187,13 +187,20 @@
   /* ===== Right sidebar ===== */
   .side { padding: 20px 16px; position: sticky; top: 0; height: 100vh; }
   .search-box {
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 10px;
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 20px; padding: 10px 16px; margin-bottom: 20px;
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
+  .search-box:focus-within {
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 3px rgba(204,106,30,0.12);
+  }
+  .search-icon { color: var(--gold); font-size: 15px; }
   .search-box input {
     background: none; border: none; outline: none; color: var(--text);
     font-family: 'Noto Sans KR', sans-serif; font-size: 14px; width: 100%;
+    letter-spacing: 0.2px;
   }
   .search-box input::placeholder { color: var(--text-muted); }
   .side-card {
@@ -201,10 +208,21 @@
     border-radius: 12px; padding: 16px; margin-bottom: 16px;
   }
   .side-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 12px; }
-  .tag-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; cursor: pointer; }
+  .tag-item { display: flex; justify-content: space-between; padding: 8px 6px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+  .tag-item:hover { background: var(--surface-hover); }
   .tag-item:hover .tag-name { color: var(--gold); }
+  .tag-item.active { background: rgba(204,106,30,0.1); }
+  .tag-item.active .tag-name { color: var(--gold); }
   .tag-name { color: var(--text); }
   .tag-count { color: var(--text-muted); font-size: 13px; }
+
+  .poster-banner {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .poster-banner img { width: 100%; display: block; }
 
   .signature { display: flex; justify-content: center; padding: 20px 0; gap: 6px; }
   .signature span { width: 4px; height: 4px; border-radius: 50%; background: var(--gold-dim); }
@@ -244,14 +262,15 @@
   <!-- RIGHT SIDEBAR -->
   <div class="side">
     <div class="search-box">
-      <span>⌕</span>
-      <input type="text" placeholder="검색">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="검색">
     </div>
     <div class="side-card">
       <div class="side-title">최근 태그</div>
-      <div class="tag-item"><span class="tag-name">#나스닥</span><span class="tag-count">312</span></div>
-      <div class="tag-item"><span class="tag-name">#듀얼헤지</span><span class="tag-count">156</span></div>
-      <div class="tag-item"><span class="tag-name">#리딩보드</span><span class="tag-count">88</span></div>
+      <div id="tagsArea"></div>
+    </div>
+    <div class="poster-banner" id="posterBanner">
+      <img src="poster.jpg" alt="WIN FUTURES" onerror="document.getElementById('posterBanner').style.display='none';">
     </div>
   </div>
 
@@ -276,10 +295,13 @@
     return d.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
   }
 
+  let currentCategory = 'all';
+  let currentSearch = '';
+
   function renderPosts(posts) {
     const container = document.getElementById('postsContainer');
     container.innerHTML = posts.map(p => `
-      <div class="post" data-cat="${p.category}">
+      <div class="post" data-cat="${p.category}" data-search="${escapeHtml(p.content.toLowerCase())}">
         <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
         <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
         <div class="post-meta"><span>${formatDate(p.date)}</span><span>· 조회 ${p.views.toLocaleString('ko-KR')}</span></div>
@@ -298,12 +320,20 @@
     return escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   }
 
+  function updateVisiblePosts() {
+    const q = currentSearch.trim().toLowerCase();
+    document.querySelectorAll('.post').forEach(p => {
+      const matchesCategory = currentCategory === 'all' || p.dataset.cat === currentCategory;
+      const matchesSearch = !q || p.dataset.search.includes(q);
+      p.classList.toggle('hidden', !(matchesCategory && matchesSearch));
+    });
+  }
+
   function applyFilter(cat) {
+    currentCategory = cat;
     document.querySelectorAll('.filter').forEach(f => f.classList.toggle('active', f.dataset.cat === cat));
     document.querySelectorAll('.cat-item').forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
-    document.querySelectorAll('.post').forEach(p => {
-      p.classList.toggle('hidden', !(cat === 'all' || p.dataset.cat === cat));
-    });
+    updateVisiblePosts();
   }
 
   function attachFilterLogic() {
@@ -343,6 +373,39 @@
     `;
   }
 
+  function renderTags(posts) {
+    const counts = {};
+    posts.forEach(p => {
+      const matches = p.content.match(/#[^\s#]+/g) || [];
+      matches.forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; });
+    });
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const el = document.getElementById('tagsArea');
+    if (sorted.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">글에 #태그를 넣으면 여기에 자동으로 표시됩니다.</div>';
+      return;
+    }
+    el.innerHTML = sorted.map(([tag, count]) =>
+      `<div class="tag-item" data-tag="${escapeHtml(tag.slice(1))}"><span class="tag-name">${escapeHtml(tag)}</span><span class="tag-count">${count}</span></div>`
+    ).join('');
+    el.querySelectorAll('.tag-item').forEach(item => {
+      item.onclick = () => {
+        const word = item.dataset.tag;
+        document.getElementById('searchInput').value = word;
+        currentSearch = word;
+        updateVisiblePosts();
+        el.querySelectorAll('.tag-item').forEach(t => t.classList.remove('active'));
+        item.classList.add('active');
+      };
+    });
+  }
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    currentSearch = e.target.value;
+    document.querySelectorAll('#tagsArea .tag-item').forEach(t => t.classList.remove('active'));
+    updateVisiblePosts();
+  });
+
   Promise.all([
     fetch('./profile.json').then(r => r.json()),
     fetch('./posts.json').then(r => r.json())
@@ -351,6 +414,7 @@
     posts.sort((a, b) => new Date(b.date) - new Date(a.date));
     renderCategoryList(posts);
     renderPosts(posts);
+    renderTags(posts);
   }).catch(() => {
     document.getElementById('postsContainer').innerHTML =
       '<div class="post"><div class="post-text">글을 불러오지 못했습니다.</div></div>';
