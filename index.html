@@ -18,8 +18,8 @@
     --surface: #1F1F23;
     --surface-hover: #262629;
     --border: #2C2C30;
-    --gold: #C6A15B;
-    --gold-dim: #8C744A;
+    --gold: #CC6A1E;
+    --gold-dim: #8C4A1E;
     --text: #E8E6E1;
     --text-secondary: #9C9A94;
     --text-muted: #6B6A65;
@@ -63,23 +63,27 @@
   .nav-item.active { color: var(--gold); font-weight: 500; }
   .nav-icon { width: 20px; text-align: center; font-size: 16px; }
   .nav-write {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     margin-top: 16px;
-    width: 100%;
-    padding: 12px;
-    background: var(--gold);
-    color: #17171A;
-    border: none;
-    border-radius: 8px;
+    margin-left: auto;
+    padding: 6px 12px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
     font-family: 'Noto Sans KR', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.3px;
     cursor: pointer;
     text-align: center;
     text-decoration: none;
     box-sizing: border-box;
   }
-  .nav-write:hover { background: #D4B06C; }
+  .nav-write:hover { background: rgba(198,161,91,0.08); border-color: var(--gold); }
 
   .nav-profile {
     padding: 4px 4px 16px;
@@ -217,7 +221,7 @@
     <div class="nav-category" id="categoryArea"></div>
     <a class="nav-item active" href="index.html" style="text-decoration:none;"><span class="nav-icon">⌂</span> 홈</a>
     <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
-    <a class="nav-write" href="write.html">글쓰기</a>
+    <a class="nav-write" href="write.html">✎ 글쓰기</a>
   </div>
 
   <!-- CENTER FEED -->
@@ -226,7 +230,7 @@
 
     <div class="filters">
       <div class="filter active" data-cat="all">전체</div>
-      <div class="filter" data-cat="notice">공지</div>
+      <div class="filter" data-cat="notice">필독해주세요</div>
       <div class="filter" data-cat="community">커뮤니티안내</div>
       <div class="filter" data-cat="review">트레이딩리뷰</div>
       <div class="filter" data-cat="archive">자료아카이브</div>
@@ -254,7 +258,7 @@
 </div>
 
 <script>
-  const CATEGORY_LABEL = { notice: '공지', community: '커뮤니티안내', review: '트레이딩리뷰', archive: '자료아카이브' };
+  const CATEGORY_LABEL = { notice: '필독해주세요', community: '커뮤니티안내', review: '트레이딩리뷰', archive: '자료아카이브' };
   const CATEGORY_CLASS = { notice: 'notice', community: '', review: 'column', archive: 'archive' };
 
   function formatDate(iso) {
@@ -314,7 +318,7 @@
     el.innerHTML = `
       <div class="nav-category-title">카테고리</div>
       <div class="cat-item active" data-cat="all"><span>전체</span><span class="cat-count">${posts.length}</span></div>
-      <div class="cat-item" data-cat="notice"><span>공지</span><span class="cat-count">${counts.notice}</span></div>
+      <div class="cat-item" data-cat="notice"><span>필독해주세요</span><span class="cat-count">${counts.notice}</span></div>
       <div class="cat-item" data-cat="community"><span>커뮤니티안내</span><span class="cat-count">${counts.community}</span></div>
       <div class="cat-item" data-cat="review"><span>트레이딩리뷰</span><span class="cat-count">${counts.review}</span></div>
       <div class="cat-item" data-cat="archive"><span>자료아카이브</span><span class="cat-count">${counts.archive}</span></div>
