@@ -330,6 +330,14 @@
     document.getElementById('lockBox').style.display = 'none';
     document.getElementById('manageArea').style.display = 'block';
     await loadPosts();
+
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('edit');
+    if (editId && postsById[editId]) {
+      openEdit(editId);
+      const target = document.querySelector(`.post-item[data-id="${editId}"]`);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 </script>
 </body>
