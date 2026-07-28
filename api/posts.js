@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { password, category, content } = req.body || {};
+    const { password, category, content, imageData } = req.body || {};
 
     if (!password || password !== process.env.WRITE_PASSWORD) {
       res.status(401).json({ error: '비밀번호가 올바르지 않습니다.' });
@@ -27,6 +27,41 @@ module.exports = async (req, res) => {
     const repo = process.env.GITHUB_REPO;
     const branch = process.env.GITHUB_BRANCH || 'main';
     const token = process.env.GITHUB_TOKEN;
+
+    // 0) 이미지가 첨부된 경우, 별도 파일로 먼저 업로드
+    let imagePath = null;
+    if (imageData && typeof imageData === 'string' && imageData.startsWith('data:image')) {
+      const match = imageData.match(/^data:image\/(\w+);base64,(.+)$/);
+      if (match) {
+        const ext = match[1] === 'jpeg' ? 'jpg' : match[1];
+        const base64Body = match[2];
+        // 대략적인 용량 체크 (base64는 원본보다 약 37% 큼)
+        const approxBytes = base64Body.length * 0.75;
+        if (approxBytes > 3 * 1024 * 1024) {
+          res.status(400).json({ error: '이미지 용량이 너무 큽니다. 더 작은 사진으로 시도해주세요.' });
+          return;
+        }
+        imagePath = `images/${Date.now()}.${ext}`;
+        const imgApiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${imagePath}`;
+        const imgPutRes = await fetch(imgApiUrl, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/vnd.github+json'
+          },
+          body: JSON.stringify({
+            message: '이미지 업로드',
+            content: base64Body,
+            branch
+          })
+        });
+        if (!imgPutRes.ok) {
+          const errText = await imgPutRes.text();
+          throw new Error('이미지 업로드 실패: ' + errText);
+        }
+      }
+    }
+
     const filePath = 'posts.json';
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
 
@@ -51,7 +86,8 @@ module.exports = async (req, res) => {
       category,
       content: content.trim(),
       date: new Date().toISOString(),
-      views: 0
+      views: 0,
+      image: imagePath
     };
     const updatedPosts = [newPost, ...currentPosts];
 
