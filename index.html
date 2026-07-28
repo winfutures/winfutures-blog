@@ -84,6 +84,13 @@
     box-sizing: border-box;
   }
   .nav-write:hover { background: rgba(198,161,91,0.08); border-color: var(--gold); }
+  .nav-poster {
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .nav-poster img { width: 100%; display: block; }
 
   .nav-profile {
     padding: 4px 4px 16px;
@@ -240,6 +247,9 @@
     <div class="nav-category" id="categoryArea"></div>
     <a class="nav-item" href="manage.html" style="text-decoration:none;"><span class="nav-icon">🗑</span> 글 관리</a>
     <a class="nav-write" href="write.html">✎ 글쓰기</a>
+    <div class="nav-poster" id="navPoster">
+      <img src="poster-left.jpg" alt="WIN FUTURES" onerror="document.getElementById('navPoster').style.display='none';">
+    </div>
   </div>
 
   <!-- CENTER FEED -->
