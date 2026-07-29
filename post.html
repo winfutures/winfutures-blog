@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">WIN FUTURES</title>
+<meta id="metaDesc" name="description" content="WIN FUTURES 자료실">
+<meta id="ogTitle" property="og:title" content="WIN FUTURES">
+<meta id="ogDesc" property="og:description" content="WIN FUTURES 자료실">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #17171A;
+    --surface: #1F1F23;
+    --border: #2C2C30;
+    --gold: #CC6A1E;
+    --gold-dim: #8C4A1E;
+    --text: #E8E6E1;
+    --text-secondary: #9C9A94;
+    --text-muted: #6B6A65;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .wrap { width: 100%; max-width: 640px; }
+  .back { color: var(--text-secondary); text-decoration: none; font-size: 14px; }
+  .back:hover { color: var(--gold); }
+  .post-tag { display: inline-block; font-size: 12px; color: var(--gold); border-left: 2px solid var(--gold); padding-left: 8px; margin: 24px 0 12px; }
+  .post-tag.column { color: #9C9A94; border-left-color: #6B6A65; }
+  .post-tag.notice { color: #C48A6A; border-left-color: #8C5C42; }
+  .post-tag.archive { color: #8FA8C4; border-left-color: #5C7A99; }
+  .post-image { width: 100%; border-radius: 10px; margin: 12px 0; display: block; }
+  .post-text { font-size: 16px; line-height: 1.8; white-space: pre-line; }
+  .post-text strong { color: var(--gold); font-weight: 700; }
+  .post-meta { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
+  .loading, .error { color: var(--text-muted); font-size: 14px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 홈으로</a>
+  <div id="content">
+    <p class="loading">불러오는 중...</p>
+  </div>
+</div>
+
+<script>
+  const CATEGORY_LABEL = { notice: '필독해주세요', community: '커뮤니티안내', review: '트레이딩리뷰', archive: '자료아카이브' };
+  const CATEGORY_CLASS = { notice: 'notice', community: '', review: 'column', archive: 'archive' };
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  function renderBold(escapedText) {
+    return escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get('id');
+
+  if (!postId) {
+    document.getElementById('content').innerHTML = '<p class="error">잘못된 주소입니다.</p>';
+  } else {
+    fetch('./posts.json?_=' + Date.now())
+      .then(r => r.json())
+      .then(posts => {
+        const p = posts.find(x => String(x.id) === String(postId));
+        if (!p) {
+          document.getElementById('content').innerHTML = '<p class="error">글을 찾을 수 없습니다. 삭제되었을 수 있습니다.</p>';
+          return;
+        }
+        const plainText = p.content.replace(/\*\*/g, '').replace(/\n/g, ' ');
+        const summary = plainText.length > 80 ? plainText.slice(0, 80) + '...' : plainText;
+        const title = `${CATEGORY_LABEL[p.category] || p.category} | ${summary.slice(0, 40)} - WIN FUTURES`;
+
+        document.title = title;
+        document.getElementById('pageTitle').textContent = title;
+        document.getElementById('metaDesc').setAttribute('content', summary);
+        document.getElementById('ogTitle').setAttribute('content', title);
+        document.getElementById('ogDesc').setAttribute('content', summary);
+
+        document.getElementById('content').innerHTML = `
+          <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
+          ${p.image ? `<img class="post-image" src="${p.image}" alt="첨부 이미지">` : ''}
+          <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
+          <div class="post-meta">${new Date(p.date).toLocaleString('ko-KR')}${p.editedAt ? ' (수정됨)' : ''} · 조회 ${p.views.toLocaleString('ko-KR')}</div>
+        `;
+      })
+      .catch(() => {
+        document.getElementById('content').innerHTML = '<p class="error">글을 불러오지 못했습니다.</p>';
+      });
+  }
+</script>
+</body>
+</html>

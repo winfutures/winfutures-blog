@@ -199,6 +199,8 @@
   .post-text strong { color: var(--gold); font-weight: 700; }
   .post-image { width: 100%; border-radius: 8px; margin: 10px 0; display: block; }
   .post-meta { display: flex; gap: 16px; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+  .post-permalink { color: var(--text-muted); text-decoration: none; }
+  .post-permalink:hover { color: var(--gold); text-decoration: underline; }
   .post-edit-link { margin-left: auto; color: var(--text-muted); text-decoration: none; }
   .post-edit-link:hover { color: var(--gold); }
   .post.hidden { display: none; }
@@ -337,7 +339,7 @@
         <div class="post-tag ${CATEGORY_CLASS[p.category] || ''}">${CATEGORY_LABEL[p.category] || p.category}</div>
         ${p.image ? `<img class="post-image" src="${p.image}" alt="첨부 이미지" loading="lazy">` : ''}
         <div class="post-text">${renderBold(escapeHtml(p.content))}</div>
-        <div class="post-meta"><span>${formatDate(p.date)}</span><span>· 조회 ${p.views.toLocaleString('ko-KR')}</span><a href="manage.html?edit=${p.id}" class="post-edit-link">✎ 수정</a></div>
+        <div class="post-meta"><a href="post.html?id=${p.id}" class="post-permalink">${formatDate(p.date)}</a><span>· 조회 ${p.views.toLocaleString('ko-KR')}</span><a href="manage.html?edit=${p.id}" class="post-edit-link">✎ 수정</a></div>
       </div>
     `).join('');
     attachFilterLogic();
