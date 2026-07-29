@@ -227,17 +227,14 @@
     border-radius: 12px; padding: 16px; margin-bottom: 16px;
   }
   .side-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 12px; }
-  #tagsArea { display: flex; flex-wrap: wrap; gap: 6px; }
+  #tagsArea { display: flex; flex-wrap: wrap; gap: 3px 10px; }
   .tag-item {
-    display: inline-flex; align-items: center; gap: 3px;
-    padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border);
-    font-size: 11px; cursor: pointer;
+    display: inline-flex; align-items: baseline; gap: 3px;
+    cursor: pointer;
   }
-  .tag-item:hover { border-color: var(--gold-dim); }
   .tag-item:hover .tag-name { color: var(--gold); }
-  .tag-item.active { border-color: var(--gold); background: rgba(204,106,30,0.1); }
   .tag-item.active .tag-name { color: var(--gold); }
-  .tag-name { color: var(--text); }
+  .tag-name { color: var(--text); font-size: 12px; }
   .tag-count { color: var(--text-muted); font-size: 10px; }
 
   .poster-banner {
