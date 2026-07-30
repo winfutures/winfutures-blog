@@ -250,7 +250,25 @@
   .poster-banner img { width: 100%; display: block; }
 
   .signature { display: flex; justify-content: center; padding: 20px 0; gap: 6px; }
-  .signature span { width: 4px; height: 4px; border-radius: 50%; background: var(--gold-dim); }
+  .signature span { width: 4px; height: 4px; border-radius: 50%; background: var(--gold-dim); }  @media (max-width: 900px) {
+    .layout { flex-direction: column; align-items: stretch; max-width: 100%; min-height: auto; }
+    .nav, .feed, .side { width: 100%; }
+    .nav {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .feed { border-right: none; }
+    .cover { height: 100px; }
+    .nav-logo { text-align: left; }
+    .nav-item { justify-content: flex-start; }
+    .nav-write { margin-left: 0; }
+    .nav-profile .name-row,
+    .nav-profile .stats { justify-content: flex-start; }
+    .cat-item { justify-content: flex-start; }
+  }
 </style>
 </head>
 <body>
