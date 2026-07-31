@@ -9,11 +9,12 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #17171A;
     --surface: #1F1F23;
+    --surface-hover: #262629;
     --border: #2C2C30;
     --gold: #CC6A1E;
     --gold-dim: #8C4A1E;
@@ -28,11 +29,61 @@
     background: var(--bg);
     color: var(--text);
     font-family: 'Noto Sans KR', sans-serif;
+  }
+  .layout {
     display: flex;
     justify-content: center;
-    padding: 40px 16px;
+    align-items: flex-start;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: 100vh;
   }
-  .wrap { width: 100%; max-width: 480px; }
+
+  /* ===== Left nav (동일 브랜드 틀) ===== */
+  .nav {
+    width: 220px;
+    flex-shrink: 0;
+    padding: 20px 12px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    border-right: 1px solid var(--border);
+    text-align: right;
+  }
+  .nav-photo { display: block; text-decoration: none; }
+  .nav-photo img { width: 100%; display: block; border-radius: 10px; border: 1px solid var(--border); }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 12px 4px 4px;
+    letter-spacing: 0.3px;
+  }
+  .nav-profile { padding: 4px 4px 16px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  .nav-profile .name-row { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
+  .nav-profile .badge {
+    display: inline-flex; align-items: center; font-size: 10px; color: var(--gold);
+    border: 1px solid var(--gold-dim); padding: 1px 6px; border-radius: 3px;
+  }
+  .nav-profile .handle { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
+  .nav-profile .bio { font-size: 12px; line-height: 1.6; margin-top: 10px; }
+  .nav-profile .bio a { color: var(--gold); text-decoration: none; }
+  .nav-category { padding-bottom: 16px; }
+  .nav-category-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 4px 8px; }
+  .cat-item { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 6px; font-size: 14px; }
+  .cat-count { color: var(--text-muted); font-size: 12px; }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; align-items: stretch; max-width: 100%; min-height: auto; }
+    .nav { width: 100%; position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); text-align: left; }
+    .nav-logo { text-align: left; }
+    .nav-profile .name-row { justify-content: flex-start; }
+    .cat-item { justify-content: flex-start; }
+    .main { width: 100% !important; }
+  }
+
+  /* ===== Center: write form ===== */
+  .main { width: 600px; flex-shrink: 0; padding: 40px 32px; }
   .back { color: var(--text-secondary); text-decoration: none; font-size: 14px; }
   .back:hover { color: var(--gold); }
   h1 {
@@ -89,7 +140,7 @@
     display: block;
   }
   select { appearance: none; cursor: pointer; }
-  button {
+  button[type="submit"] {
     margin-top: 24px;
     width: 100%;
     padding: 13px;
@@ -102,51 +153,110 @@
     font-size: 15px;
     cursor: pointer;
   }
-  button:hover { background: #E08A42; }
-  button:disabled { background: var(--gold-dim); cursor: not-allowed; }
+  button[type="submit"]:hover { background: #E08A42; }
+  button[type="submit"]:disabled { background: var(--gold-dim); cursor: not-allowed; }
   .msg { margin-top: 16px; font-size: 14px; padding: 12px; border-radius: 8px; display: none; }
   .msg.success { display: block; background: rgba(198,161,91,0.12); color: var(--gold); border: 1px solid var(--gold-dim); }
   .msg.error { display: block; background: rgba(196,106,106,0.1); color: var(--error); border: 1px solid var(--error); }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <a class="back" href="index.html">← 홈으로</a>
-  <h1>WIN<span class="dot">·</span>FUTURES 글쓰기</h1>
 
-  <form id="postForm">
-    <label>비밀번호</label>
-    <input type="password" id="password" required>
+<div class="layout">
+  <!-- LEFT NAV (홈 화면과 동일한 틀) -->
+  <div class="nav">
+    <a href="index.html"><div class="nav-photo"><img src="logo.png" alt="WIN FUTURES"></div></a>
+    <div class="nav-logo">WIN FUTURES ARCHIVE</div>
+    <div class="nav-profile" id="profileArea"></div>
+    <div class="nav-category" id="categoryArea"></div>
+  </div>
 
-    <label>카테고리</label>
-    <select id="category" required>
-      <option value="notice">필독해주세요</option>
-      <option value="community">커뮤니티안내</option>
-      <option value="review">트레이딩리뷰</option>
-      <option value="archive">자료아카이브</option>
-    </select>
+  <!-- CENTER: 글쓰기 폼 -->
+  <div class="main">
+    <a class="back" href="index.html">← 홈으로</a>
+    <h1>WIN<span class="dot">·</span>FUTURES 글쓰기</h1>
 
-    <label>이미지 첨부 (선택)</label>
-    <input type="file" id="imageInput" accept="image/*">
-    <div class="hint">사진을 선택하면 자동으로 크기를 줄여서 업로드합니다. 너무 큰 원본이어도 괜찮습니다.</div>
-    <div id="imagePreviewWrap" style="display:none;">
-      <img id="imagePreview" alt="미리보기">
-      <button type="button" id="removeImageBtn" class="tool-btn" style="margin-top:8px;">이미지 제거</button>
-    </div>
+    <form id="postForm">
+      <label>비밀번호</label>
+      <input type="password" id="password" required>
 
-    <label>내용</label>
-    <div class="toolbar">
-      <button type="button" id="boldBtn" class="tool-btn"><b>B</b> 굵게</button>
-      <span class="tool-hint">문장을 선택하고 누르면 강조됩니다</span>
-    </div>
-    <textarea id="content" placeholder="글 내용을 입력하세요" required></textarea>
+      <label>카테고리</label>
+      <select id="category" required>
+        <option value="notice">필독해주세요</option>
+        <option value="community">커뮤니티안내</option>
+        <option value="review">트레이딩리뷰</option>
+        <option value="archive">자료아카이브</option>
+      </select>
 
-    <button type="submit" id="submitBtn">게시하기</button>
-    <div class="msg" id="msg"></div>
-  </form>
+      <label>이미지 첨부 (선택)</label>
+      <input type="file" id="imageInput" accept="image/*">
+      <div class="hint">사진을 선택하면 자동으로 크기를 줄여서 업로드합니다. 너무 큰 원본이어도 괜찮습니다.</div>
+      <div id="imagePreviewWrap" style="display:none;">
+        <img id="imagePreview" alt="미리보기">
+        <button type="button" id="removeImageBtn" class="tool-btn" style="margin-top:8px;">이미지 제거</button>
+      </div>
+
+      <label>내용</label>
+      <div class="toolbar">
+        <button type="button" id="boldBtn" class="tool-btn"><b>B</b> 굵게</button>
+        <span class="tool-hint">문장을 선택하고 누르면 강조됩니다</span>
+      </div>
+      <textarea id="content" placeholder="글 내용을 입력하세요" required></textarea>
+
+      <button type="submit" id="submitBtn">게시하기</button>
+      <div class="msg" id="msg"></div>
+    </form>
+  </div>
 </div>
 
 <script>
+  // ===== 좌측 프로필/카테고리 (홈 화면과 동일 로직) =====
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  function renderBold(escapedText) {
+    return escapedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+  function renderBio(text) {
+    let escaped = escapeHtml(text);
+    escaped = renderBold(escaped);
+    escaped = escaped.replace(/(blog\.naver\.com\/[a-zA-Z0-9_-]+)/gi, (m) => `<a href="https://${m}" target="_blank">${m}</a>`);
+    escaped = escaped.replace(/(카카오\s*(?:ID|아이디)\s*[:：]?\s*)([A-Za-z0-9_.\-]+)/gi, (m, label, id) => `${label}<span style="color:var(--gold);">${id}</span>`);
+    return escaped;
+  }
+  function renderProfile(profile, postCount) {
+    const el = document.getElementById('profileArea');
+    el.innerHTML = `
+      ${profile.badge ? `<div class="name-row"><span class="badge">${escapeHtml(profile.badge)}</span></div>` : ''}
+      ${profile.handle ? `<div class="handle">${escapeHtml(profile.handle)}</div>` : ''}
+      <div class="bio">${renderBio(profile.bio).replace(/\n/g, '<br>')}</div>
+    `;
+  }
+  const CATEGORY_LABEL = { notice: '필독해주세요', community: '커뮤니티안내', review: '트레이딩리뷰', archive: '자료아카이브' };
+  function renderCategoryList(posts) {
+    const counts = { notice: 0, community: 0, review: 0, archive: 0 };
+    posts.forEach(p => { if (counts[p.category] !== undefined) counts[p.category]++; });
+    const el = document.getElementById('categoryArea');
+    el.innerHTML = `
+      <div class="nav-category-title">카테고리</div>
+      <div class="cat-item"><span>전체</span><span class="cat-count">${posts.length}</span></div>
+      <div class="cat-item"><span>필독해주세요</span><span class="cat-count">${counts.notice}</span></div>
+      <div class="cat-item"><span>커뮤니티안내</span><span class="cat-count">${counts.community}</span></div>
+      <div class="cat-item"><span>트레이딩리뷰</span><span class="cat-count">${counts.review}</span></div>
+      <div class="cat-item"><span>자료아카이브</span><span class="cat-count">${counts.archive}</span></div>
+    `;
+  }
+  Promise.all([
+    fetch('./profile.json').then(r => r.json()),
+    fetch('./posts.json').then(r => r.json())
+  ]).then(([profile, posts]) => {
+    renderProfile(profile, posts.length);
+    renderCategoryList(posts);
+  }).catch(() => {});
+
+  // ===== 이미지 첨부 (압축) =====
   let compressedImageData = null;
 
   const imageInput = document.getElementById('imageInput');
@@ -187,6 +297,7 @@
     imagePreviewWrap.style.display = 'none';
   });
 
+  // ===== 내용 자동 확장 + 굵게 =====
   const contentBox = document.getElementById('content');
 
   function autoGrow() {
@@ -207,6 +318,7 @@
     contentBox.focus();
   });
 
+  // ===== 제출 =====
   const form = document.getElementById('postForm');
   const msg = document.getElementById('msg');
   const submitBtn = document.getElementById('submitBtn');
