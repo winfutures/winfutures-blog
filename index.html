@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WIN FUTURES | 해외선물 시장분석 · 듀얼 헤지 전략 블로그</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="description" content="15년 경력 해외선물 트레이더 WIN FUTURES의 시장분석, 트레이딩 칼럼, 듀얼 포지션 헤지 시스템 이야기.">
 <meta property="og:title" content="WIN FUTURES | 해외선물 시장분석 블로그">
 <meta property="og:description" content="15년 경력 해외선물 트레이더의 시장분석과 헤지 전략 칼럼.">
@@ -382,11 +385,21 @@
     });
   }
 
+  function updateUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (currentCategory && currentCategory !== 'all') params.set('cat', currentCategory); else params.delete('cat');
+    if (currentSearch) params.set('q', currentSearch); else params.delete('q');
+    const qs = params.toString();
+    const newUrl = window.location.pathname + (qs ? '?' + qs : '');
+    window.history.replaceState(null, '', newUrl);
+  }
+
   function applyFilter(cat) {
     currentCategory = cat;
     document.querySelectorAll('.filter').forEach(f => f.classList.toggle('active', f.dataset.cat === cat));
     document.querySelectorAll('.cat-item').forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
     updateVisiblePosts();
+    updateUrlParams();
   }
 
   function attachFilterLogic() {
@@ -457,6 +470,7 @@
     currentSearch = e.target.value;
     document.querySelectorAll('#tagsArea .tag-item').forEach(t => t.classList.remove('active'));
     updateVisiblePosts();
+    updateUrlParams();
   });
 
   Promise.all([
@@ -468,6 +482,20 @@
     renderCategoryList(posts);
     renderPosts(posts);
     renderTags(posts);
+
+    // 새로고침 시 URL에 저장된 카테고리/검색 상태 복원
+    const params = new URLSearchParams(window.location.search);
+    const urlCat = params.get('cat');
+    const urlQ = params.get('q');
+    if (urlQ) {
+      document.getElementById('searchInput').value = urlQ;
+      currentSearch = urlQ;
+    }
+    if (urlCat) {
+      applyFilter(urlCat);
+    } else {
+      updateVisiblePosts();
+    }
   }).catch(() => {
     document.getElementById('postsContainer').innerHTML =
       '<div class="post"><div class="post-text">글을 불러오지 못했습니다.</div></div>';
