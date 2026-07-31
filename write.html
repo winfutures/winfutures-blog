@@ -69,9 +69,17 @@
   .nav-profile .bio { font-size: 12px; line-height: 1.6; margin-top: 10px; }
   .nav-profile .bio a { color: var(--gold); text-decoration: none; }
   .nav-category { padding-bottom: 16px; }
-  .nav-category-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 4px 8px; }
-  .cat-item { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 6px; font-size: 14px; }
-  .cat-count { color: var(--text-muted); font-size: 12px; }
+  .nav-category-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 8px 6px; }
+  .cat-item {
+    display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+    padding: 5px 8px; border-radius: 6px; font-size: 13px;
+    transition: background 0.15s;
+  }
+  .cat-item:hover { background: var(--surface-hover); }
+  .cat-count {
+    background: var(--surface); color: var(--text-muted); font-size: 11px;
+    padding: 1px 7px; border-radius: 9px; min-width: 18px; text-align: center;
+  }
 
   @media (max-width: 900px) {
     .layout { flex-direction: column; align-items: stretch; max-width: 100%; min-height: auto; }
