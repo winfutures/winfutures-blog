@@ -216,19 +216,20 @@
   /* ===== Right sidebar ===== */
   .side { width: 280px; flex-shrink: 0; padding: 20px 16px; }
   .search-box {
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 8px;
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    border-radius: 20px; padding: 8px 14px; margin-bottom: 20px;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
   }
   .search-box:focus-within {
     border-color: var(--gold-dim);
-    box-shadow: 0 0 0 3px rgba(204,106,30,0.12);
+    background: var(--surface-hover);
+    box-shadow: 0 0 0 3px rgba(204,106,30,0.1);
   }
-  .search-icon { color: var(--gold); font-size: 15px; }
+  .search-icon { color: var(--gold); font-size: 12px; opacity: 0.85; }
   .search-box input {
     background: none; border: none; outline: none; color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif; font-size: 14px; width: 100%;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 12px; width: 100%;
     letter-spacing: 0.2px;
   }
   .search-box input::placeholder { color: var(--text-muted); }
