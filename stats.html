@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>방문자 통계 - WIN FUTURES</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #17171A;
+    --surface: #1F1F23;
+    --border: #2C2C30;
+    --gold: #CC6A1E;
+    --gold-dim: #8C4A1E;
+    --text: #E8E6E1;
+    --text-secondary: #9C9A94;
+    --text-muted: #6B6A65;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .wrap { width: 100%; max-width: 480px; }
+  .back { color: var(--text-secondary); text-decoration: none; font-size: 14px; }
+  .back:hover { color: var(--gold); }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; margin: 16px 0 24px; }
+  h1 .dot { color: var(--gold); }
+
+  .lock-box { text-align: center; padding: 60px 0; }
+  input[type="password"] {
+    width: 100%; max-width: 260px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px; padding: 12px; outline: none; margin-bottom: 12px;
+  }
+  button {
+    padding: 11px 20px; background: var(--gold); color: #17171A;
+    border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+  button:hover { background: #E08A42; }
+
+  .total-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 20px;
+  }
+  .total-num { font-family: 'Space Grotesk', sans-serif; font-size: 40px; color: var(--gold); font-weight: 700; }
+  .total-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+  .daily-title { font-size: 13px; color: var(--text-secondary); margin: 20px 0 10px; }
+  .daily-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+  }
+  .daily-date { color: var(--text-muted); }
+  .daily-count { color: var(--text); font-weight: 500; }
+  .msg { display: none; margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 홈으로</a>
+  <h1>WIN<span class="dot">·</span>FUTURES 방문자 통계</h1>
+
+  <div class="lock-box" id="lockBox">
+    <input type="password" id="statsPassword" placeholder="비밀번호"><br>
+    <button id="unlockBtn">확인</button>
+    <div class="msg" id="lockMsg"></div>
+  </div>
+
+  <div id="statsArea" style="display:none;">
+    <div class="total-card">
+      <div class="total-num" id="totalNum">0</div>
+      <div class="total-label">누적 방문 수</div>
+    </div>
+    <div class="daily-title">최근 방문 추이</div>
+    <div id="dailyList"></div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('unlockBtn').addEventListener('click', async () => {
+    const pw = document.getElementById('statsPassword').value;
+    if (!pw) return;
+
+    try {
+      const res = await fetch('./stats.json?_=' + Date.now());
+      const stats = await res.json();
+
+      document.getElementById('lockBox').style.display = 'none';
+      document.getElementById('statsArea').style.display = 'block';
+      document.getElementById('totalNum').textContent = (stats.total || 0).toLocaleString('ko-KR');
+
+      const daily = stats.daily || {};
+      const sortedDates = Object.keys(daily).sort().reverse().slice(0, 14);
+      const list = document.getElementById('dailyList');
+      if (sortedDates.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">아직 방문 기록이 없습니다.</p>';
+      } else {
+        list.innerHTML = sortedDates.map(date => `
+          <div class="daily-row">
+            <span class="daily-date">${date}</span>
+            <span class="daily-count">${daily[date].toLocaleString('ko-KR')}명</span>
+          </div>
+        `).join('');
+      }
+    } catch (err) {
+      document.getElementById('lockMsg').textContent = '통계를 불러오지 못했습니다.';
+      document.getElementById('lockMsg').style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>

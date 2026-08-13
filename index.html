@@ -506,6 +506,12 @@
     document.getElementById('postsContainer').innerHTML =
       '<div class="post"><div class="post-text">글을 불러오지 못했습니다.</div></div>';
   });
+
+  // 방문자 카운트 (세션당 1회만 기록)
+  if (!sessionStorage.getItem('wf_tracked')) {
+    sessionStorage.setItem('wf_tracked', '1');
+    fetch('/api/track', { method: 'POST' }).catch(() => {});
+  }
 </script>
 
 </body>
